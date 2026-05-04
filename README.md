@@ -216,13 +216,6 @@ python manage.py runserver
 
 ---
 
-## 🌐 Live Demo
-
-👉 Add your deployed link here
-Example: https://your-app.onrender.com
-
----
-
 ## 👨‍💻 Author
 
 **Dileep Kumar**
