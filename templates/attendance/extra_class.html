@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Extra Class - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="auth-card glass">
+    <div class="auth-header">
+        <h1>Extra Class</h1>
+        <p>Log a class that isn't in your regular timetable</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" placeholder="e.g. Workshop" required>
+        </div>
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" name="date" id="date" required>
+        </div>
+        <div class="form-group" style="display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+                <label for="start_time">Start Time</label>
+                <input type="time" name="start_time" id="start_time" required>
+            </div>
+            <div style="flex: 1;">
+                <label for="end_time">End Time</label>
+                <input type="time" name="end_time" id="end_time" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Add Extra Class</button>
+    </form>
+</div>
+{% endblock %}

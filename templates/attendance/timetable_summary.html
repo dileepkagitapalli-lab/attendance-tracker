@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Timetable Summary - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="glass" style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: var(--primary);">Timetable Updation Completed</h1>
+        <p style="color: var(--text-muted);">Please review your weekly timetable below.</p>
+    </div>
+
+    <div style="overflow-x: auto; margin-bottom: 2rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--glass-border);">
+                    <th style="padding: 1rem; color: var(--primary);">Day</th>
+                    <th style="padding: 1rem; color: var(--primary);">Schedule</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day_data in days_data %}
+                <tr style="border-bottom: 1px solid var(--glass-border);">
+                    <td style="padding: 1.5rem 1rem; vertical-align: top; font-weight: bold; width: 20%;">
+                        {{ day_data.day }}
+                    </td>
+                    <td style="padding: 1rem;">
+                        {% if day_data.entries %}
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            {% for entry in day_data.entries %}
+                                <div style="display: inline-flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 8px;">
+                                    <span style="font-weight: bold;">{{ entry.subject }}</span>
+                                    <span style="color: var(--text-muted);"><i class="far fa-clock"></i> {{ entry.time_slot }}</span>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-style: italic;">No classes</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="glass" style="padding: 1.5rem; background: rgba(var(--primary-rgb), 0.1); border: 1px solid var(--primary); text-align: center;">
+        <h3 style="margin-bottom: 1rem;">Is this timetable correct?</h3>
+        <form method="POST" style="display: flex; gap: 1rem; justify-content: center;">
+            {% csrf_token %}
+            <button type="submit" name="edit" value="1" class="btn" style="background: transparent; border: 1px solid var(--text-muted); color: var(--text);">
+                <i class="fas fa-edit"></i> No, Edit Timetable
+            </button>
+            <button type="submit" name="confirm" value="1" class="btn" style="background: #22c55e; border-color: #22c55e;">
+                <i class="fas fa-check"></i> Yes, Confirm & Proceed
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Add RGB variable for primary color if not present in base.html */
+    :root {
+        --primary-rgb: 99, 102, 241; /* Assuming a shade of indigo/blue, adjust as needed */
+    }
+</style>
+{% endblock %}

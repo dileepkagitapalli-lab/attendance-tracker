@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Semester Info - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="auth-card glass">
+    <div class="auth-header">
+        <h1>Semester Details</h1>
+        <p>Set your semester start date for accurate tracking</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="start_date">Semester Start Date</label>
+            <input type="date" name="start_date" id="start_date" value="{{ info.start_date|date:'Y-m-d' }}" required>
+        </div>
+
+        <button type="submit" class="btn">Save Information</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="auth-card glass">
+    <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p>Login to track your attendance</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="roll_number">Roll Number</label>
+            <input type="text" name="roll_number" id="roll_number" placeholder="Enter your roll number" required>
+        </div>
+        <div class="form-group">
+            <label for="first_name">Name</label>
+            <input type="text" name="first_name" id="first_name" placeholder="Enter your name" required>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+    </form>
+
+    <div class="auth-footer">
+        Don't have an account? <a href="{% url 'register' %}">Register now</a>
+    </div>
+</div>
+{% endblock %}

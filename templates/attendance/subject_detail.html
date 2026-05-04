@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ subject_name }} - Details - AttendTrack{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="color: var(--primary); margin-bottom: 0.5rem;">{{ subject_name }}</h1>
+            <p style="color: var(--text-muted);">Attendance History & Upcoming Schedule</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn" style="background: transparent; border: 1px solid var(--glass-border); color: var(--text);">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+        
+        <!-- Past Classes -->
+        <div class="glass" style="padding: 1.5rem;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
+                <i class="fas fa-history" style="color: var(--primary); margin-right: 0.5rem;"></i> Past Classes
+            </h2>
+            
+            {% if past_records %}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+                {% for record in past_records %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 4px solid {% if record.attended %}#22c55e{% else %}#ef4444{% endif %};">
+                    <div>
+                        <strong style="display: block; font-size: 1rem;">{{ record.date|date:"D, M d, Y" }}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted)">
+                            <i class="far fa-clock"></i> {{ record.time_slot }}
+                        </span>
+                    </div>
+                    <div>
+                        {% if record.attended %}
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; background: rgba(34, 197, 94, 0.1); color: #4ade80; font-size: 0.85rem; font-weight: bold;">
+                                Present
+                            </span>
+                        {% else %}
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; background: rgba(239, 68, 68, 0.1); color: #f87171; font-size: 0.85rem; font-weight: bold;">
+                                Absent
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No past attendance records found.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Upcoming Classes -->
+        <div class="glass" style="padding: 1.5rem;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
+                <i class="fas fa-calendar-alt" style="color: var(--accent); margin-right: 0.5rem;"></i> Upcoming Classes
+            </h2>
+            
+            {% if upcoming_classes %}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for entry in upcoming_classes %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <div>
+                        <strong style="display: block; font-size: 1rem; color: var(--accent);">{{ entry.date|date:"D, M d, Y" }}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted)">
+                            {{ entry.day }}
+                        </span>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="far fa-clock"></i> {{ entry.time_slot }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No upcoming classes scheduled.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Custom scrollbar for past classes list */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .glass {
+            padding: 1rem;
+        }
+        div[style*="grid-template-columns: 1fr 1fr;"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

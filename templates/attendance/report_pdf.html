@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: #6366f1;
+            font-weight: bold;
+        }
+
+        .student-info {
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .overall {
+            margin-top: 40px;
+            background-color: #eef2ff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .warning {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #16a34a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">AttendTrack</div>
+        <h1>Attendance Report</h1>
+        <p>Generated on: {{ date }}</p>
+    </div>
+
+    <div class="student-info">
+        <h3>Student Details</h3>
+        <p><strong>Name:</strong> {{ user.first_name }}</p>
+        <p><strong>Roll Number:</strong> {{ user.roll_number }}</p>
+        <p><strong>Branch:</strong> {{ user.branch }}</p>
+        <p><strong>Semester:</strong> {{ user.semester }}</p>
+    </div>
+
+    <h3>Subject-wise Analysis</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Total Classes (Units)</th>
+                <th>Attended (Units)</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub, data in stats.items %}
+            <tr>
+                <td>{{ sub }}</td>
+                <td>{{ data.conducted }}</td>
+                <td>{{ data.attended }}</td>
+                <td class="{% if data.percentage < 75 %}warning{% else %}success{% endif %}">{{ data.percentage }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="overall">
+        <h3>Overall Summary</h3>
+        <p><strong>Total Classes Conducted:</strong> {{ total_conducted }}</p>
+        <p><strong>Total Classes Attended:</strong> {{ total_attended }}</p>
+        <p style="font-size: 18px;"><strong>Overall Attendance:</strong>
+            <span class="{% if overall_perc < 75 %}warning{% else %}success{% endif %}">{{ overall_perc }}%</span>
+        </p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Working Day Check - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="auth-card glass">
+    <div class="auth-header">
+        <h1>Working Day Check</h1>
+        <p>Is <strong>{{ date|date:"l, d M Y" }}</strong> a working day?</p>
+    </div>
+
+    <form action="{% url 'mark_working_day' %}" method="POST" style="display: flex; flex-direction: row; gap: 1rem;">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ date|date:'Y-m-d' }}">
+
+        <button type="submit" name="is_working" value="yes" class="btn"
+            style="flex: 1; background: linear-gradient(135deg, #22c55e, #16a34a);">
+            <i class="fas fa-check"></i> Yes
+        </button>
+        <button type="submit" name="is_working" value="no" class="btn"
+            style="flex: 1; background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <i class="fas fa-times"></i> No
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+        Selecting "No" will mark today as a holiday.
+    </p>
+</div>
+{% endblock %}

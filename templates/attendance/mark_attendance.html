@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="glass" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Mark Attendance</h1>
+        <form method="GET" style="margin-top: 1rem;">
+            <label for="date_select" style="color: var(--text-muted); font-size: 1.1rem; margin-right: 0.5rem;">Date:</label>
+            <input type="date" name="date" id="date_select" value="{{ date|date:'Y-m-d' }}" onchange="this.form.submit()" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.05); color: inherit; font-size: 1rem;">
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">
+                Showing subjects scheduled for {{ day_name }}
+            </p>
+        </form>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if regular_slots or extra_slots %}
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% if regular_slots %}
+            <h3 style="color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Regular
+                Classes</h3>
+            {% for slot in regular_slots %}
+            <div class="glass"
+                style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-color: rgba(99, 102, 241, 0.2);">
+                <div>
+                    <strong style="font-size: 1.1rem; display: block;">{{ slot.subject }}</strong>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="far fa-clock"></i> {{ slot.time_slot }}
+                    </span>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <label class="radio-btn">
+                        <input type="radio" name="reg_{{ slot.id }}" value="present" required>
+                        <span class="present">Present</span>
+                    </label>
+                    <label class="radio-btn">
+                        <input type="radio" name="reg_{{ slot.id }}" value="absent">
+                        <span class="absent">Absent</span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if extra_slots %}
+            <h3
+                style="color: var(--accent); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 1rem;">
+                Extra Classes</h3>
+            {% for slot in extra_slots %}
+            <div class="glass"
+                style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-color: rgba(34, 211, 238, 0.2);">
+                <div>
+                    <strong style="font-size: 1.1rem; display: block;">{{ slot.subject }}</strong>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="far fa-clock"></i> {{ slot.time_slot }}
+                    </span>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <label class="radio-btn">
+                        <input type="radio" name="extra_{{ slot.id }}" value="present" required>
+                        <span class="present">Present</span>
+                    </label>
+                    <label class="radio-btn">
+                        <input type="radio" name="extra_{{ slot.id }}" value="absent">
+                        <span class="absent">Absent</span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn" style="margin-top: 2rem; width: 100%; font-size: 1.1rem; padding: 1rem;">
+            Submit Attendance
+        </button>
+        {% else %}
+        <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
+            <i class="fas fa-bed" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <p>No classes scheduled for today!</p>
+            <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 1.5rem; display: inline-block;">Back to
+                Dashboard</a>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<style>
+    .radio-btn input {
+        display: none;
+    }
+
+    .radio-btn span {
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: 1px solid var(--glass-border);
+        display: inline-block;
+    }
+
+    .radio-btn .present:hover {
+        border-color: #22c55e;
+        color: #22c55e;
+    }
+
+    .radio-btn .absent:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .radio-btn input:checked+.present {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: white;
+    }
+
+    .radio-btn input:checked+.absent {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: white;
+    }
+</style>
+{% endblock %}

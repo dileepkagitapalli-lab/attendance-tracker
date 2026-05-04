@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AttendTrack{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Sidebar / Quick Actions -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="glass" style="padding: 2rem; border-color: var(--primary);">
+            <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary);">Overall Progress</h2>
+            <div
+                style="display: flex; align-items: center; justify-content: center; position: relative; margin: 1rem 0;">
+                <svg width="150" height="150" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--primary)" stroke-width="8"
+                        pathLength="100"
+                        stroke-dasharray="{{ overall_perc|default:0 }} 100" stroke-dashoffset="0"
+                        transform="rotate(-90 50 50)" style="transition: stroke-dasharray 1s ease-in-out; stroke-linecap: round;" />
+                    <text x="50" y="55" text-anchor="middle" font-size="16" fill="white" font-weight="700">{{ overall_perc }}%</text>
+                </svg>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
+                <span>Attended: {{ total_attended }}</span>
+                <span>Total: {{ total_conducted }}</span>
+            </div>
+            {% if warning_overall %}
+            <div
+                style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; color: #fca5a5; font-size: 0.85rem;">
+                <i class="fas fa-exclamation-triangle"></i> Overall attendance below 75%!
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="glass" style="padding: 1.5rem;">
+            <h3 style="font-size: 1rem; margin-bottom: 1rem;">Quick Actions</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="{% url 'mark_attendance' %}" class="btn">Mark Today's Attendance</a>
+                <a href="{% url 'extra_class_manage' %}" class="btn"
+                    style="background: linear-gradient(135deg, var(--accent), var(--primary));">Log Extra Class</a>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <a href="{% url 'export_pdf' %}" class="btn"
+                        style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.8rem;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    <a href="{% url 'export_excel' %}" class="btn"
+                        style="background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.3); font-size: 0.8rem;">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </a>
+                </div>
+
+                <a href="{% url 'timetable_manage' %}" class="btn"
+                    style="background: transparent; border: 1px solid var(--primary);">Manage Timetable</a>
+                <a href="{% url 'semester_info_update' %}" class="btn"
+                    style="background: transparent; border: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.9rem;">Semester
+                    Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Subject Analysis -->
+    <div>
+        <h2 style="margin-bottom: 1.5rem;">Subject-wise Analysis</h2>
+        {% if stats %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            {% for sub, data in stats.items %}
+            <div class="glass" style="padding: 1.5rem; position: relative; overflow: hidden;">
+                {% if data.warning %}
+                <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ef4444;"></div>
+                {% endif %}
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.1rem; flex: 1;">
+                        <a href="{% url 'subject_detail' sub %}" style="color: var(--text); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text)'">
+                            {{ sub }} <i class="fas fa-arrow-right" style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;"></i>
+                        </a>
+                    </h3>
+                    <span style="font-weight: 700; color: {% if data.warning %}#ef4444{% else %}#22c55e{% endif %}">{{ data.percentage }}%</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Units: {{ data.attended }} / {{ data.conducted }}
+                </div>
+
+                <!-- Prediction -->
+                <div style="border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+                    {% if data.warning %}
+                    <p style="font-size: 0.8rem; color: #fca5a5;">
+                        <i class="fas fa-exclamation-triangle"></i> Attendance below 75%!
+                    </p>
+                    {% else %}
+                    <p style="font-size: 0.8rem; color: #86efac;">
+                        <i class="fas fa-check-circle"></i> Safe zone
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="glass" style="padding: 4rem; text-align: center; color: var(--text-muted);">
+            <p>Add subjects to your timetable to see analysis here.</p>
+            <a href="{% url 'timetable_manage' %}" class="btn" style="margin-top: 1rem; display: inline-block;">Setup
+                Timetable</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

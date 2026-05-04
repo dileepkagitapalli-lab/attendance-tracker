@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendar View - AttendTrack{% endblock %}
+
+{% block content %}
+<div class="glass" style="padding: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Attendance Calendar</h1>
+        <div style="display: flex; gap: 1rem; font-size: 0.9rem;">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span
+                    style="width: 12px; height: 12px; background: #22c55e; border-radius: 50%;"></span> Present</span>
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span
+                    style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></span> Absent</span>
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span
+                    style="width: 12px; height: 12px; background: #94a3b8; border-radius: 50%;"></span> Holiday</span>
+        </div>
+    </div>
+
+    <!-- For a real project we'd use FullCalendar.js, but I'll implement a clean CSS grid calendar -->
+    <div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1rem;">
+        <!-- Calendar headers -->
+        <div class="cal-header">Sun</div>
+        <div class="cal-header">Mon</div>
+        <div class="cal-header">Tue</div>
+        <div class="cal-header">Wed</div>
+        <div class="cal-header">Thu</div>
+        <div class="cal-header">Fri</div>
+        <div class="cal-header">Sat</div>
+
+        <!-- Days will be populated by JS for simplicity and dynamic rendering of current month -->
+    </div>
+</div>
+
+<style>
+    .cal-header {
+        text-align: center;
+        font-weight: 700;
+        color: var(--primary);
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .cal-day {
+        min-height: 100px;
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 0.5rem;
+        position: relative;
+    }
+
+    .cal-day.today {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .cal-day.holiday {
+        opacity: 0.6;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .day-num {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+    }
+
+    .status-present {
+        background: #22c55e;
+    }
+
+    .status-absent {
+        background: #ef4444;
+    }
+
+    .event-item {
+        font-size: 0.7rem;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+<script>
+    const events = {{ events| safe }};
+    const holidays = {{ holidays| safe }};
+    const calendarEl = document.getElementById('calendar');
+
+    function renderCalendar() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Blank days
+        for (let i = 0; i < firstDay; i++) {
+            const blank = document.createElement('div');
+            calendarEl.appendChild(blank);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const isToday = d === now.getDate();
+            const isHoliday = holidays.includes(dateStr);
+
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `cal-day ${isToday ? 'today' : ''} ${isHoliday ? 'holiday' : ''}`;
+
+            dayDiv.innerHTML = `<span class="day-num">${d}</span>`;
+            if (isHoliday) dayDiv.innerHTML += '<div style="font-size: 0.7rem; color: #94a3b8; margin-top: 5px;">Holiday</div>';
+
+            const dayEvents = events.filter(e => e.date === dateStr);
+            dayEvents.forEach(e => {
+                const ev = document.createElement('div');
+                ev.className = 'event-item';
+                ev.innerHTML = `<span class="indicator ${e.attended ? 'status-present' : 'status-absent'}"></span> ${e.subject}`;
+                dayDiv.appendChild(ev);
+            });
+
+            calendarEl.appendChild(dayDiv);
+        }
+    }
+
+    renderCalendar();
+</script>
+{% endblock %}
